@@ -9,18 +9,76 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var tapCount = 0
-    @State private var name = ""
-    let studentName = ["Harry","server","connected"]
-    @State private var studName = "Harry"
+    
+//    @State private var tapCount = 0
+//    @State private var name = ""
+//    let studentName = ["Harry","server","connected"]
+//    @State private var studName = "Harry"
+    
+    //check spliting part
+//    @State is a property wrapper, updating @state vals will update ui
+    @State private var checkAmount = ""
+    @State private var numberOfPeople = ""
+    @State private var tipPercentage = 2
+    
+    let tipPercentages = [10, 15, 20, 25, 0]
+    //getting total per person value
+    var totalPerPerson: Double {
+        //calculate total per person value
+        let peopleCount = Double(self.numberOfPeople) ?? 0
+        let tipSelection = Double(self.tipPercentages[tipPercentage])
+        let orderAmount = Double(self.checkAmount) ?? 0
+        
+        let tipValue = orderAmount / 100 * tipSelection
+        let grandTotal = orderAmount + tipValue
+        let amountPerPerson = grandTotal / peopleCount
+        print(grandTotal/peopleCount)
+        return amountPerPerson
+    }
     
     var body: some View {
         
-        Picker("Selected Student", selection: $studName) {
-            ForEach(0..<studentName.count){
-                Text("\(self.studentName[$0])")
+        NavigationView {
+            Form {
+               Section {
+                   TextField("Check amount:", text: $checkAmount)
+                       .keyboardType(.decimalPad)
+                    TextField("Number of people:", text: $numberOfPeople)
+                        .keyboardType(.decimalPad)
+                }
+                
+                //tip percentages
+                Section(header: Text("How much tip do you want to leave?")) {
+                    
+                    Picker("Tip percentage:", selection: $tipPercentage){
+                        ForEach(0 ..< self.tipPercentages.count){
+                            Text("\(self.tipPercentages[$0])%")
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                }
+                
+                Section(header: Text("Amount Per Person")) {
+                   Text("$\(totalPerPerson, specifier: "%.2f")")
+                    
+               }
+                
+                Section(header: Text("Total anount with tip")) {
+                    Text("$\(self.totalPerPerson * (Double(self.numberOfPeople) ?? 0)!, specifier: "%.2f")")
+                }
             }
+            
+            //navigation title
+            .navigationBarTitle("WeSplit")
         }
+        
+        
+        
+//        Picker("Selected Student", selection: $studName) {
+//            ForEach(0..<studentName.count){
+//                Text("\(self.studentName[$0])")
+//            }
+//        }
         
 //        Form {
 //            ForEach(0 ..< 100){ number in
