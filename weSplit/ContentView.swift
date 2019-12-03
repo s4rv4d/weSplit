@@ -20,6 +20,7 @@ struct ContentView: View {
     @State private var checkAmount = ""
     @State private var numberOfPeople = ""
     @State private var tipPercentage = 2
+    @State private var emptyBool = true
     
     let tipPercentages = [10, 15, 20, 25, 0]
     //getting total per person value
@@ -33,6 +34,22 @@ struct ContentView: View {
         let grandTotal = orderAmount + tipValue
         let amountPerPerson = grandTotal / peopleCount
         return amountPerPerson
+    }
+    
+    var totalWithTip: Double {
+       //calculate total value
+        let tipSelection = Double(self.tipPercentages[tipPercentage])
+        let orderAmount = Double(self.checkAmount) ?? 0
+        
+        let tipValue = orderAmount / 100 * tipSelection
+        let grandTotal = orderAmount + tipValue
+        print(grandTotal)
+        print(grandTotal.isZero)
+        return grandTotal
+    }
+    
+    var isEmpty: Bool {
+        return totalWithTip.isZero
     }
     
     var body: some View {
@@ -58,12 +75,13 @@ struct ContentView: View {
                 }
                 
                 Section(header: Text("Amount Per Person")) {
-                   Text("$\(totalPerPerson, specifier: "%.2f")")
-                    
+                    Text("$\(totalPerPerson, specifier: "%.2f")")
+
                }
                 
                 Section(header: Text("Total anount with tip")) {
-                    Text("$\(self.totalPerPerson * (Double(self.numberOfPeople) ?? 0)!, specifier: "%.2f")")
+                    Text("$\(self.totalWithTip, specifier: "%.2f")")
+                        .foregroundColor(self.isEmpty ? .red : .black)
                 }
             }
             
